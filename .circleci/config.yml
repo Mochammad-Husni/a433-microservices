@@ -5,41 +5,48 @@ orbs:
   go: circleci/go@1.7.3
 
 jobs:
+  lint-dockerfile:
+    executor: docker/machine
+      
+    steps:
+      - checkout
+      - docker/dockerlint:
+         dockerfile: ./Dockerfile
+         treat-warning-as-errors: true
+
   test-app:
-    executor:
+    executor: 
       name: go/default
-      tag:  '1.15'
+      tag: '1.16'
+      
     steps:
       - checkout
       - run:
-          name: Run Unit Tests
-          command: go test -v -short --count=1 $(go list ./ ...)
-
+          name: "Test app"
+          command: "go test -v -short --count=1 $(go list./ ...)"
+          
   build-app-karsajobs:
-    executor: docker/docker
-    environment:
-      IMAGE_NAME: ghcr.io/mochammad-husni/karsajobs
+    docker:
+      - image: cimg/base:stable
     steps:
       - checkout
       - setup_remote_docker
       - run:
-          name: Build Docker Image
-          command: docker build -t $IMAGE_NAME:latest .
+        name: "Docker build"
+        command: "docker build -t ghcr.io/mochammad-husni/karsajobs:latest ."
       - run:
-          name: publish Docker Image to Github Container Registry
-          command: |
-            echo "$CR_PAT" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
-            docker push $IMAGE_NAME:latest
+          name: "Docker login"
+          command: "echo $CR_PAT | docker login ghcr.io -u mochammad-husni --password-stdin"
+            
+      - run:
+          name: "Docker push"
+          command: "docker push ghcr.io/mochammad-husni/karsajobs:latest"
   
 workflows:
-  ci:
+  karsajobs-workflows:
 
     jobs:
-      - docker/hadolint:
-          dockerfiles: '.Dockerfile'
+      - lint-dockerfile
       - test-app
-      - build-app-karsajobs:
-          requires:
-            - docker/hadolint
-            - test-app
+      - build-app-karsajobs
 
