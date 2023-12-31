@@ -13,32 +13,32 @@ jobs:
          dockerfile: ./Dockerfile
          treat-warning-as-errors: true
 
-  test-app:
-    executor: 
-      name: go/default
-      tag: '1.16'      
-    steps:
-      - checkout
-      - run:
+    test-app:
+      executor: 
+        name: go/default
+        tag: '1.16'      
+      steps:
+        - checkout
+        - run:
           name: "Test app"
           command: "go test -v -short --count=1 $(go list./...)"
           
-  build-app-karsajobs:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-        name: "Docker build"
-        command: "docker build -t ghcr.io/mochammad-husni/karsajobs:latest ."
-      - run:
-          name: "Docker login"
-          command: "echo $CR_PAT | docker login ghcr.io -u mochammad-husni --password-stdin"
+    build-app-karsajobs:
+      docker:
+        - image: cimg/base:stable
+      steps:
+        - checkout
+        - setup_remote_docker
+        - run:
+          name: "Docker build"
+          command: "docker build -t ghcr.io/mochammad-husni/karsajobs:latest ."
+        - run:
+            name: "Docker login"
+            command: "echo $CR_PAT | docker login ghcr.io -u mochammad-husni --password-stdin"
             
-      - run:
-          name: "Docker push"
-          command: "docker push ghcr.io/mochammad-husni/karsajobs:latest"
+        - run:
+            name: "Docker push"
+            command: "docker push ghcr.io/mochammad-husni/karsajobs:latest"
   
 workflows:
   karsajobs-workflows:
