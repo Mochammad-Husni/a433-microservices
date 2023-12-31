@@ -1,5 +1,5 @@
 #!/bin/bash
-#build Docker image dari berkas Dockerfile
+#build Docker image dari berkas Dockerfile(karsajobs)
 docker build -t ghcr.io/mochammad-husni/karsajobs:latest .
 
 #login ke GitHub Package
