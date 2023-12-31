@@ -31,15 +31,15 @@ jobs:
             echo "$CR_PAT" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
             docker push $IMAGE_NAME:latest
   
-  workflows:
-    ci:
+workflows:
+  ci:
 
-      jobs:
-        - docker/hadolint:
-            dockerfiles: '.Dockerfile'
-        - test-app
-        - build-app-karsajobs:
-            requires:
-              - docker/hadolint
-              - test-app
-
+    jobs:
+      - docker/hadolint:
+          dockerfiles: '.Dockerfile'
+      - test-app
+      - build-app-karsajobs:
+          requires:
+            - docker/hadolint
+            - test-app
+              
