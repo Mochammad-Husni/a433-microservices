@@ -1,0 +1,58 @@
+#versi API yang didefinisikan
+apiVersion: apps/v1
+#jenis objek kubernetes (Deployment)
+kind: Deployment
+#metadata untuk deployment
+metadata:
+  #nama deployment
+  name: karsajobs-backend
+#spesifikasi untuk deployment
+spec:
+  #jumlah replikas Pod yang akan dibuat
+  replicas: 1
+  #selector untuk memilih pod
+  selector:
+    #Pod yang dipilih harus memiliki label sesuai dengan ketentuan
+    matchLabels:
+      app: backend
+  #template untuk membuat pod    
+  template:
+    #metadata untuk pod
+    metadata:
+      #label pod
+      labels:
+        app: backend
+    #spesifikasi untuk pod
+    spec:
+      #konfigurasi container dalam pod
+      containers:
+          #nama container
+        - name: karsajobs
+          #Nama image yang digunakan untuk membuat container
+          image: ghcr.io/mochammad-husni/karsajobs:latest
+          #mekanisme pull image (image di pull setiap kali pod di mulai)
+          imagePullPolicy: Always
+          #port yang digunakan
+          ports:
+            #port yang digunakan untuk mengakses container
+            - containerPort: 8080
+          #enviroment variabelyang dibutuhkan oleh aplikasi
+          env:
+            #nama (name) enviroment variable
+            - name: APP_PORT
+              #Nilai (value) enviroment variabel
+              value: '8080'
+            - name: MONGO_HOST
+              value: mongo-service
+            - name: MONGO_USER
+              #Value dari enviroment  variabel berasal dari secret (mongo credentials) dengan key MONGO_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-credentials
+                  key: MONGO_ROOT_USERNAME
+            - name: MONGO_PASS
+                 #Value dari enviroment  variabel berasal dari secret (mongo credentials) dengan key MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-credentials
+                  key: MONGO_ROOT_PASSWORD
