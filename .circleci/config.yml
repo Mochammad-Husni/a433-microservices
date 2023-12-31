@@ -6,8 +6,7 @@ orbs:
 
 jobs:
   lint-dockerfile:
-    executor: docker/machine
-      
+    executor: docker/machine      
     steps:
       - checkout
       - docker/dockerlint:
@@ -17,13 +16,12 @@ jobs:
   test-app:
     executor: 
       name: go/default
-      tag: '1.16'
-      
+      tag: '1.16'      
     steps:
       - checkout
       - run:
           name: "Test app"
-          command: "go test -v -short --count=1 $(go list./ ...)"
+          command: "go test -v -short --count=1 $(go list./...)"
           
   build-app-karsajobs:
     docker:
